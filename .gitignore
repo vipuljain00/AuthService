@@ -1,0 +1,46 @@
+# Ignore Gradle build output folders
+/build/
+/app/build/
+/.gradle/
+
+# Gradle wrapper files (do NOT ignore these, they should be versioned)
+!gradlew
+!gradlew.bat
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# Ignore IDE files:
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+logs/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Compiled Java class files and archives
+*.class
+*.jar
+*.war
+
+# Lombok config (optional)
+lombok.config
+
+# Environment and config files with sensitive info
+application.properties
+application.yml
+*.env
