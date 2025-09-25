@@ -8,6 +8,8 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
+    // Add Spring Boot plugin
+    id 'org.springframework.boot' version '3.5.3'
 }
 
 repositories {
@@ -29,6 +31,7 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.3.0'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '3.5.3'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '3.5.3'
+    implementation "com.mysql:mysql-connector-j:9.3.0"
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: '3.5.3'
     compileOnly 'org.projectlombok:lombok:1.18.40'
     annotationProcessor 'org.projectlombok:lombok:1.18.40'
@@ -36,9 +39,9 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.40'
     // JWT dependencies (using jjwt)
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    annotationProcessor 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'  // For JSON serialization
-
+    
     // Spring Boot test framework (JUnit, Mockito, etc.)
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '3.5.3'
     // Spring Security test support (mocking users, JWT, authorization)
@@ -56,4 +59,8 @@ java {
 application {
     // Define the main class for the application.
     mainClass = 'org.example.App'
+}
+
+bootJar {
+    archiveFileName = 'app.jar' // Optional: Rename the output JAR
 }

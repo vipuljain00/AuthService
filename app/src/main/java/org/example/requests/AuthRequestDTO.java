@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AuthRequestDTO {
 
-    private String userName;
+    private String username;
     private String password;
 
 }

@@ -32,11 +32,11 @@ public class TokenController {
     @PostMapping("auth/v1/login")
     public ResponseEntity authenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO){
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequestDTO.getUserName(), authRequestDTO.getPassword()));
+                new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
         if(authentication.isAuthenticated()){
-            RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDTO.getUserName());
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDTO.getUsername());
             return new ResponseEntity<>(JWTResponseDto.builder()
-                    .accessToken(jwtService.generateJwtToken(authRequestDTO.getUserName()))
+                    .accessToken(jwtService.generateJwtToken(authRequestDTO.getUsername()))
                     .refreshToken(refreshToken.getToken())
                     .build(), HttpStatus.OK);
         } else {
@@ -54,7 +54,8 @@ public class TokenController {
                     String accessToken = jwtService.generateJwtToken(userInfo.getUsername());
                     return JWTResponseDto.builder()
                             .accessToken(accessToken)
-                            .refreshToken(refreshTokenRequestDTO.getToken()).build();
+                            .refreshToken(refreshTokenRequestDTO.getToken())
+                            .build();
                 }).orElseThrow(() ->new RuntimeException("Refresh Token is not in DB..!!"));
 
     }

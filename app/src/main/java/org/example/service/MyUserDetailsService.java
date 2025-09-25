@@ -44,8 +44,8 @@ public class MyUserDetailsService implements UserDetailsService{
     }
 
     public Boolean signUpUser(UserInfoDto userInfoDto) {
-        boolean isValidated = ValidateUtil.validateCredentials(userInfoDto.getUsername(), userInfoDto.getEmail());
-        if(!isValidated){ throw new InvalidException("Username or Email not Valid");}
+//        boolean isValidated = ValidateUtil.validateCredentials(userInfoDto.getUsername(), userInfoDto.getEmail());
+//        if(!isValidated){ throw new InvalidException("Username or Email not Valid");}
         userInfoDto.setPassword(passwordEncoder.encode(userInfoDto.getPassword()));
         if(Objects.nonNull(checkIfUserAlreadyExists(userInfoDto))){
             return false;

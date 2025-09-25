@@ -41,6 +41,6 @@ Thumbs.db
 lombok.config
 
 # Environment and config files with sensitive info
-#application.properties
+application.properties
 application.yml
 *.env
