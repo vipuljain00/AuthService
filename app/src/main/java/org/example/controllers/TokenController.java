@@ -28,36 +28,42 @@ public class TokenController {
     @Autowired
     private JwtService jwtService;
 
-
     @PostMapping("auth/v1/login")
-    public ResponseEntity authenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
-        if(authentication.isAuthenticated()){
-            RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDTO.getUsername());
-            return new ResponseEntity<>(JWTResponseDto.builder()
-                    .accessToken(jwtService.generateJwtToken(authRequestDTO.getUsername()))
-                    .refreshToken(refreshToken.getToken())
-                    .build(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<?> authenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword())
+            );
+            System.out.println("Authentication object: " + authentication);
+
+            if (authentication.isAuthenticated()) {
+                RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDTO.getUsername());
+                String accessToken = jwtService.generateJwtToken(authRequestDTO.getUsername());
+                return ResponseEntity.ok(JWTResponseDto.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken.getToken())
+                        .build());
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            // It's better to return 500, unless you know it's always an auth failure
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed: " + ex.getMessage());
         }
     }
 
     @PostMapping("auth/v1/refreshToken")
     public JWTResponseDto refreshToken(@RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO){
+        // This will throw TokenNotFoundException if not found, handled by global exception handler
+        RefreshToken refreshToken =  refreshTokenService.findByToken(refreshTokenRequestDTO.getToken());
+        RefreshToken verifiedRefreshtoken = refreshTokenService.verifyExpiration(refreshToken);
+        String accessToken = jwtService.generateJwtToken(verifiedRefreshtoken.getUserInfo().getUsername());
 
-        return refreshTokenService.findByToken(refreshTokenRequestDTO.getToken())
-                .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getUserInfo)
-                .map(userInfo -> {
-                    String accessToken = jwtService.generateJwtToken(userInfo.getUsername());
-                    return JWTResponseDto.builder()
-                            .accessToken(accessToken)
-                            .refreshToken(refreshTokenRequestDTO.getToken())
-                            .build();
-                }).orElseThrow(() ->new RuntimeException("Refresh Token is not in DB..!!"));
-
+        return JWTResponseDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshTokenRequestDTO.getToken())
+                .build();
     }
 
 }
