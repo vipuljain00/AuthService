@@ -22,14 +22,8 @@ public class UserInfoSerializer implements Serializer<UserInfoDto> {
             bytes = objectMapper.writeValueAsString(userInfoDto).getBytes();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
         }
         return bytes;
-    }
-
-    @Override
-    public byte[] serialize(String topic, Headers headers, UserInfoDto data) {
-        return Serializer.super.serialize(topic, headers, data);
     }
 
     @Override
