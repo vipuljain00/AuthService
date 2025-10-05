@@ -3,7 +3,11 @@ package org.example.service;
 import org.example.Exceptions.InvalidException;
 import org.example.Exceptions.UserAlreadyExistsException;
 import org.example.Utilities.ValidateUtil;
+import org.example.eventProducer.UserInfoProducer;
 import org.example.models.UserInfoDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,14 +33,22 @@ public class MyUserDetailsService implements UserDetailsService{
 
     private final UserInfoRepo userInfoRepo;
 
+    @Autowired
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserInfoProducer userInfoProducer;
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(MyUserDetailsService.class);
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserInfo userInfo = userInfoRepo.findByUsername(username);
         if(userInfo == null){
+            LOGGER.error("Username not found: "+ username);
             throw new UsernameNotFoundException(" username not found");
         }
+        LOGGER.info("User Authenticated Successfully: "+ username);
         return new MyUserDetails(userInfo);
     }
 
@@ -56,6 +68,9 @@ public class MyUserDetailsService implements UserDetailsService{
 
         String userId = UUID.randomUUID().toString();
         userInfoRepo.save(new UserInfo(userId, userInfoDto.getUsername(), userInfoDto.getPassword(), new HashSet<>()));
+
+        userInfoProducer.sendEventToKafka(userInfoDto);
+
         return true;
     }
 
