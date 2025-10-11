@@ -14,8 +14,10 @@ import org.example.entities.UserInfo;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserInfoDto extends UserInfo {
 
+    @NonNull
     private String firstName;
 
+    @NonNull
     private String lastName;
 
     private Long phoneNumber;

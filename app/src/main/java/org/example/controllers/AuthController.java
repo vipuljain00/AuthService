@@ -26,7 +26,7 @@ public class AuthController {
 
     @PostMapping("auth/v1/signup")
     public ResponseEntity<?> signup(@RequestBody UserInfoDto userInfoDto){
-        Boolean isSignedUp = myUserDetailsService.signUpUser(userInfoDto);
+        String userId = myUserDetailsService.signUpUser(userInfoDto);
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userInfoDto.getUsername());
         String jwtToken = jwtService.generateJwtToken(userInfoDto.getUsername());

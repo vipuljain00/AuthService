@@ -1,0 +1,16 @@
+# TO RUN docker-compose.yml FILE
+docker compose up -d
+
+#TO STOP THE KAFKA AND MYSQL
+docker compose down
+
+# TO RUN MYSQL CLIENT (SPECIFY USER ACCORDINGLY)
+docker exec -it mysql-8.3.0 mysql -u root -p
+
+#TO SEE LIVE MESSAGES FROM BEGINNING
+docker exec -it kafka-mysql-installation-kafka-1 kafka-console-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic UserInfoEvent \
+  --from-beginning
+
+#
